@@ -378,7 +378,7 @@ public class KeyboardView extends View implements View.OnClickListener {
     mPadding = new Rect(0, 0, 0, 0);
     mMiniKeyboardCache = new HashMap<Key, View>();
 
-    mSwipeThreshold = (int) (500 * getResources().getDisplayMetrics().density);
+    mSwipeThreshold = (int) (100 * getResources().getDisplayMetrics().density);
     mDisambiguateSwipe = true;
 
     resetMultiTap();
@@ -429,7 +429,7 @@ public class KeyboardView extends View implements View.OnClickListener {
                     swipeUp();
                     return true;
                   }
-                } else if (velocityY > mSwipeThreshold && absX < absY / 2 && deltaY > travelY) {
+                } else if (velocityY > mSwipeThreshold && absX < absY && deltaY > travelY) {
                   if (mDisambiguateSwipe && endingVelocityY < velocityY / 4) {
                     sendDownKey = true;
                     type = KeyEventType.SWIPE_DOWN.ordinal();
