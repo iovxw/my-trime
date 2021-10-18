@@ -46,7 +46,7 @@ public class Event {
   private String toggle;
   private String commit;
 
-  private String shiftLock;
+  private boolean modifierLock;
   private boolean functional;
   private boolean repeatable;
   private boolean sticky;
@@ -74,7 +74,7 @@ public class Event {
       toggle = YamlUtils.INSTANCE.getString(m, "toggle", "");
       label = YamlUtils.INSTANCE.getString(m, "label", "");
       preview = YamlUtils.INSTANCE.getString(m, "preview", "");
-      shiftLock = YamlUtils.INSTANCE.getString(m, "shift_lock", "");
+      modifierLock = YamlUtils.INSTANCE.getBoolean(m, "lock", false);
       commit = YamlUtils.INSTANCE.getString(m, "commit", "");
       String send = YamlUtils.INSTANCE.getString(m, "send", "");
       if (TextUtils.isEmpty(send) && !TextUtils.isEmpty(command))
@@ -134,8 +134,8 @@ public class Event {
     return sticky;
   }
 
-  public String getShiftLock() {
-    return shiftLock;
+  public boolean enabledLock() {
+    return modifierLock;
   }
 
   @NonNull
