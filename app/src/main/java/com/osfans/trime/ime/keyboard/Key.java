@@ -453,18 +453,16 @@ public class Key {
   }
 
   public boolean isShift() {
-    int c = getCode();
+    return isShift(0);
+  }
+
+  public boolean isShift(int type) {
+    int c = getEvent(type).getCode();
     return (c == KeyEvent.KEYCODE_SHIFT_LEFT || c == KeyEvent.KEYCODE_SHIFT_RIGHT);
   }
 
-  public boolean isShiftLock() {
-    switch (getClick().getShiftLock()) {
-      case "long":
-        return false;
-      case "click":
-        return true;
-    }
-    return !Rime.isAsciiMode();
+  public boolean enabledLock(int type) {
+    return getEvent(type).enabledLock();
   }
 
   public boolean sendBindings(int type) {

@@ -529,14 +529,14 @@ public class KeyboardView extends View implements View.OnClickListener, Coroutin
   /**
    * 設定鍵盤的Shift鍵狀態
    *
-   * @param on 是否保持Shift按下狀態
+   * @param lock 是否保持Shift按下狀態
    * @param shifted 是否按下Shift
    * @return Shift鍵狀態是否改變
    * @see Keyboard#setShifted(boolean, boolean) KeyboardView#isShifted()
    */
-  public boolean setShifted(boolean on, boolean shifted) {
+  public boolean setShifted(boolean lock, boolean shifted) {
     if (mKeyboard != null) {
-      if (mKeyboard.setShifted(on, shifted)) {
+      if (mKeyboard.setShifted(lock, shifted)) {
         // The whole keyboard probably needs to be redrawn
         invalidateAllKeys();
         return true;
@@ -910,8 +910,8 @@ public class KeyboardView extends View implements View.OnClickListener, Coroutin
   private void detectAndSendKey(int index, int x, int y, long eventTime, int type) {
     if (index != NOT_A_KEY && index < mKeys.length) {
       final Key key = mKeys[index];
-      if (key.isShift() && !key.sendBindings(type)) {
-        setShifted(key.isShiftLock(), !isShifted());
+      if (key.isShift(type)) {
+        setShifted(key.enabledLock(type), !isShifted());
       } else {
         if (key.getClick().isRepeatable()) {
           if (type > 0) mAbortKey = true;
@@ -1216,16 +1216,16 @@ public class KeyboardView extends View implements View.OnClickListener, Coroutin
       return true;
     } else {
       if (popupKey.getLongClick() != null) {
+        if (popupKey.isShift(KeyEventType.LONG_CLICK.ordinal())) {
+            setShifted(popupKey.enabledLock(KeyEventType.LONG_CLICK.ordinal()), !isShifted());
+            return true;
+        }
         removeMessages();
         mAbortKey = true;
         final Event e = popupKey.getLongClick();
         mKeyboardActionListener.onEvent(e);
         releaseKey(e.getCode());
         resetShifted();
-        return true;
-      }
-      if (popupKey.isShift() && !popupKey.sendBindings(KeyEventType.LONG_CLICK.ordinal())) {
-        setShifted(!popupKey.isOn(), !popupKey.isOn());
         return true;
       }
     }

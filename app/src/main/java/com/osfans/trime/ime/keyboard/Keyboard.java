@@ -381,12 +381,12 @@ public class Keyboard {
   /**
    * 設定鍵盤的Shift鍵狀態
    *
-   * @param on 是否保持Shift按下狀態
+   * @param lock 是否保持Shift按下狀態
    * @param shifted 是否按下Shift
    * @return Shift鍵狀態是否改變
    */
-  public boolean setShifted(boolean on, boolean shifted) {
-    on = on & shifted;
+  public boolean setShifted(boolean lock, boolean shifted) {
+    boolean on = lock & shifted;
     if (mShiftKey != null) mShiftKey.setOn(on);
     return setModifier(KeyEvent.META_SHIFT_ON, on || shifted);
   }
