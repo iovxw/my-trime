@@ -6,53 +6,13 @@ set(CMAKE_CXX_STANDARD 14)
 
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
 
-set(ICONV_SOURCES
-  libiconv/libcharset/lib/localcharset.c
-  libiconv/lib/iconv.c
-  libiconv/lib/relocatable.c
-)
-add_library(iconv STATIC ${ICONV_SOURCES})
-add_library(Iconv::Iconv ALIAS iconv)
-target_compile_definitions(iconv PRIVATE
-  LIBDIR="c" BUILDING_LIBICONV IN_LIBRARY
-)
-target_include_directories(iconv BEFORE PRIVATE
-  "libiconv/lib"
-  "libiconv/include"
-  "libiconv/libcharset/include"
-)
+include(Iconv)
+# workaround for boost install
 install(TARGETS iconv EXPORT boost_locale-targets)
-include_directories(
-  "libiconv/include"
-)
 
-#file(GLOB BOOST_SOURCES
-#  boost/libs/filesystem/src/*.cpp
-#  boost/libs/regex/src/*.cpp
-#  boost/libs/system/src/error_code.cpp
-#  boost/libs/locale/src/encoding/codepage.cpp
-#)
-#set(RIME_BOOST_SIGNALS2 1)
-#add_library(boost STATIC ${BOOST_SOURCES} ${BOOST_SIGNAL_SOURCES})
-#target_include_directories(boost PRIVATE ${CMAKE_BINARY_DIR}/include)
-#target_compile_definitions(boost PRIVATE BOOST_LOCALE_WITH_ICONV)
-#target_link_libraries(boost iconv)
-set(BOOST_INCLUDE_LIBRARIES "filesystem" "atomic" "regex" "system" "locale")
-foreach(comp ${BOOST_INCLUDE_LIBRARIES})
-  LIST(APPEND Boost_LIBRARIES Boost::${comp})
-endforeach()
-add_subdirectory(boost)
+include(Boost)
 
-file(GLOB_RECURSE BOOST_HEADERS boost/libs/*.ipp boost/libs/*.h boost/libs/*.hpp)
-foreach(head ${BOOST_HEADERS})
-  string(REGEX REPLACE "^.*boost/libs" "boost/libs" head ${head})
-  string(REGEX REPLACE "^.*include/boost/" "" headout ${head})
-  configure_file(
-    ${CMAKE_CURRENT_LIST_DIR}/${head}
-    ${CMAKE_BINARY_DIR}/include/boost/${headout} COPYONLY
-  )
-endforeach()
-
+# TODO: NO EXTERNAL?
 option(BUILD_TESTING "" OFF)
 option(EXTERNAL_CAPNP "" ON)
 find_package(CapnProto CONFIG QUIET)
@@ -120,6 +80,8 @@ string(REPLACE "-Wformat" "" CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS})
 add_definitions("-Wno-format")
 # workaround end
 add_subdirectory(librime)
+
+# TODO: PLUGINS
 
 # rime_jni
 if(UNIX)
