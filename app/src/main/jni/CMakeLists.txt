@@ -10,43 +10,9 @@ include(Iconv)
 # workaround for boost install
 install(TARGETS iconv EXPORT boost_locale-targets)
 
-include(Boost)
+add_subdirectory(boost)
 
-# TODO: NO EXTERNAL?
-option(BUILD_TESTING "" OFF)
-option(EXTERNAL_CAPNP "" ON)
-find_package(CapnProto CONFIG QUIET)
-if(NOT CapnProto_FOUND)
-  # No working installation of Cap'n Proto found, so fall back to searching the environment.
-  #
-  # We search for the external capnp compiler binaries via $CAPNP, $CAPNPC_CXX, and
-  # find_program(). find_program() will use various paths in its search, among them
-  # ${CMAKE_PREFIX_PATH}/bin and $PATH.
-
-  if(NOT CAPNP_EXECUTABLE)
-    if(DEFINED ENV{CAPNP})
-      set(CAPNP_EXECUTABLE "$ENV{CAPNP}")
-    else()
-      find_program(CAPNP_EXECUTABLE capnp)
-    endif()
-  endif()
-
-  if(NOT CAPNPC_CXX_EXECUTABLE)
-    if(DEFINED ENV{CAPNPC_CXX})
-      set(CAPNPC_CXX_EXECUTABLE "$ENV{CAPNPC_CXX}")
-    else()
-      # Also search in the same directory that `capnp` was found in
-      get_filename_component(capnp_dir "${CAPNP_EXECUTABLE}" DIRECTORY)
-      find_program(CAPNPC_CXX_EXECUTABLE capnpc-c++ HINTS "${capnp_dir}")
-    endif()
-  endif()
-endif()
-add_subdirectory(capnproto)
-configure_file(
-  capnproto/c++/cmake/CapnProtoTargets.cmake
-  ${CMAKE_CURRENT_BINARY_DIR}/capnproto/c++/cmake COPYONLY
-)
-set(CapnProto_DIR "${CMAKE_CURRENT_BINARY_DIR}/capnproto/c++/cmake")
+include(Capnproto)
 
 #add_subdirectory(glog)
 
